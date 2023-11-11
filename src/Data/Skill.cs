@@ -24,6 +24,11 @@ namespace RogueSurvivor.Data
         {
             m_ID = id;
         }
+        public Skill(int id, int level)
+        {
+            m_ID = id;
+            m_Level = level;
+        }
     }
 
     [Serializable]
@@ -140,6 +145,15 @@ namespace RogueSurvivor.Data
 
             m_Table.Add(sk.ID, sk);
         }
+        public void UpdateSkill(int id, int level)
+        {
+            if (m_Table == null)
+                m_Table = new Dictionary<int, Skill>(3);
+
+
+
+            m_Table[id].Level = level;
+        }
 
         public void AddOrIncreaseSkill(int id)
         {
@@ -168,6 +182,35 @@ namespace RogueSurvivor.Data
                 if (m_Table.Count == 0)
                     m_Table = null;
             }
+        }
+        public void AddOrIncreaseSkill(int id, int amt)
+        {
+            if (m_Table == null)
+                m_Table = new Dictionary<int, Skill>(3);
+
+            Skill sk = GetSkill(id);
+            if (sk == null)
+            {
+                sk = new Skill(id);
+                m_Table.Add(id, sk);
+            }
+
+            sk.Level += amt;
+        }
+
+        public void DecOrRemoveSkill(int id, int amt)
+        {
+            if (m_Table == null) return;
+
+            Skill sk = GetSkill(id);
+            if (sk == null) return;
+            if (sk.Level - amt <= 0)
+            {
+                m_Table.Remove(id);
+                if (m_Table.Count == 0)
+                    m_Table = null;
+            }
+            sk.Level -= amt;
         }
     }
 }

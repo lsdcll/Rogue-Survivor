@@ -9878,6 +9878,8 @@ namespace RogueSurvivor.Engine
 
         void HandleAiActor(Actor aiActor)
         {
+           
+
             // Get and perform action from AI controler.
             ActorAction desiredAction = aiActor.Controller.GetAction(this);
 
@@ -9888,6 +9890,44 @@ namespace RogueSurvivor.Engine
                 if (insaneAction != null && insaneAction.IsLegal())
                     desiredAction = insaneAction;
             }
+
+            //Party Share Skill Buff??
+
+            if (aiActor.HasLeader)
+            {
+                HashSet<Point> actorFov = LOS.ComputeFOVFor(m_Rules, aiActor, m_Session.WorldTime, m_Session.World.Weather);
+                HashSet<Point> leaderFov = LOS.ComputeFOVFor(m_Rules, aiActor.Leader, m_Session.WorldTime, m_Session.World.Weather);
+                aiActor.IsLeaderVisible = actorFov.Contains(aiActor.Leader.Location.Position) && leaderFov.Contains(aiActor.Location.Position);
+                if (aiActor.IsLeaderVisible)
+                {
+                    //LEARN SKILLS FROM LEADER
+                    foreach (Skill leaderSkill in aiActor.Leader.Sheet.SkillTable.Skills)
+                    {
+                        //if skill is shareable AND the leader has a higher skill level
+                        if (Skills.PARTY_SHARE_SKILLS.Contains((Skills.IDs)leaderSkill.ID) && leaderSkill.Level > aiActor.Sheet.SkillTable.GetSkillLevel(leaderSkill.ID))
+                        {
+                            //Calculate avg level between follower and leader
+                            int avgLvl = (int)Math.Ceiling((double)(leaderSkill.Level + aiActor.Sheet.SkillTable.GetSkillLevel(leaderSkill.ID) / 2));
+                            //Add skill to actor 
+                            //If actor already has shared skill and the level needs updating
+                            if (aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) != 0 && aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) != avgLvl)
+                            {
+                                aiActor.SharedSkills.UpdateSkill(leaderSkill.ID, avgLvl);
+                                break;
+                            }
+                            //If actor doesnt have shared skill
+                            else if (aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) == 0)
+                            {
+                                aiActor.SharedSkills.AddSkill(new Skill(leaderSkill.ID, avgLvl));
+                            }
+                        }
+
+                    }
+
+                }
+            }
+            
+             
 
             // Do action.
             if (desiredAction != null)
@@ -19045,6 +19085,7 @@ namespace RogueSurvivor.Engine
         {
             return actor == m_Player || IsVisibleToPlayer(actor.Location);
         }
+
 
         bool IsVisibleToPlayer(MapObject mapObj)
         {

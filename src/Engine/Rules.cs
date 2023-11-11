@@ -3623,7 +3623,7 @@ namespace RogueSurvivor.Engine
 
         public int ActorMedicineEffect(Actor actor, int baseEffect)
         {
-            int effectBonus = (int)(Math.Ceiling(SKILL_MEDIC_BONUS * actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) * baseEffect));
+            int effectBonus = (int)(Math.Ceiling(SKILL_MEDIC_BONUS * actor.GetSkillLevel((int)Skills.IDs.MEDIC) * baseEffect));
             return baseEffect + effectBonus;
         }
 
@@ -3637,8 +3637,11 @@ namespace RogueSurvivor.Engine
         {
             int barBonus = 0;
 
+            //calculate leader shared carpentry skill
+
+
             // carpentry skill
-            barBonus += (int)(baseBarricadingPoints * SKILL_CARPENTRY_BARRICADING_BONUS * actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY));
+            barBonus += (int)(baseBarricadingPoints * SKILL_CARPENTRY_BARRICADING_BONUS * actor.GetSkillLevel((int)Skills.IDs.CARPENTRY));
 
             // alpha10
             // tool build bonus
@@ -3647,6 +3650,8 @@ namespace RogueSurvivor.Engine
             {
                 barBonus += (int)(baseBarricadingPoints * eqMw.ToolBuildBonus);
             }
+
+
 
             return baseBarricadingPoints + barBonus;
         }

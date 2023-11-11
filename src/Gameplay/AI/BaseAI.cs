@@ -5395,6 +5395,7 @@ namespace RogueSurvivor.Gameplay.AI
             return !game.Rules.AreEnemies(m_Actor, other) && m_Actor.Faction == other.Faction;
         }
 
+
         protected Actor GetNearestTargetFor(RogueGame game, Actor actor)
         {
             Map map = actor.Location.Map;
@@ -5421,6 +5422,8 @@ namespace RogueSurvivor.Gameplay.AI
 
             return nearest;
         }
+
+        
 
         // alpha10
         protected Attack GetActorAttack(RogueGame game, Actor actor)
