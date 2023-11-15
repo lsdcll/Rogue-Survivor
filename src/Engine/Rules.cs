@@ -2749,7 +2749,7 @@ namespace RogueSurvivor.Engine
             ///////////////////////////
 
             // 1. No carpentry skill.
-            if (actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
+            if (actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
             {
                 reason = "no skill in carpentry";
                 return false;
@@ -2820,7 +2820,7 @@ namespace RogueSurvivor.Engine
             int dmg = a.CurrentMeleeAttack.DamageValue / 2;
 
             // Necrology.
-            dmg += SKILL_NECROLOGY_CORPSE_BONUS * a.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
+            dmg += SKILL_NECROLOGY_CORPSE_BONUS * a.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
 
             return dmg;
         }
@@ -3000,7 +3000,7 @@ namespace RogueSurvivor.Engine
             //////////////////////////
 
             // 1. No medic skill.
-            if (actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) == 0)
+            if (actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) == 0)
             {
                 reason = "lack medic skill";
                 return false;
@@ -3408,7 +3408,7 @@ namespace RogueSurvivor.Engine
 
         public int ActorDisturbedLevel(Actor actor)
         {
-            float factor = 1.0f - SKILL_STRONG_PSYCHE_LEVEL_BONUS * actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.STRONG_PSYCHE);
+            float factor = 1.0f - SKILL_STRONG_PSYCHE_LEVEL_BONUS * actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.STRONG_PSYCHE);
             return (int)(SANITY_UNSTABLE_LEVEL * factor);
         }
 
@@ -3421,7 +3421,7 @@ namespace RogueSurvivor.Engine
 
         public int ActorDamageBonusVsUndeads(Actor actor)
         {
-            return SKILL_NECROLOGY_UNDEAD_BONUS * actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
+            return SKILL_NECROLOGY_UNDEAD_BONUS * actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
         }
 
         // alpha10 added mapobject param
@@ -3623,7 +3623,7 @@ namespace RogueSurvivor.Engine
 
         public int ActorMedicineEffect(Actor actor, int baseEffect)
         {
-            int effectBonus = (int)(Math.Ceiling(SKILL_MEDIC_BONUS * actor.GetSkillLevel((int)Skills.IDs.MEDIC) * baseEffect));
+            int effectBonus = (int)(Math.Ceiling(SKILL_MEDIC_BONUS * actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) * baseEffect));
             return baseEffect + effectBonus;
         }
 
@@ -3641,7 +3641,7 @@ namespace RogueSurvivor.Engine
 
 
             // carpentry skill
-            barBonus += (int)(baseBarricadingPoints * SKILL_CARPENTRY_BARRICADING_BONUS * actor.GetSkillLevel((int)Skills.IDs.CARPENTRY));
+            barBonus += (int)(baseBarricadingPoints * SKILL_CARPENTRY_BARRICADING_BONUS * actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY));
 
             // alpha10
             // tool build bonus
@@ -3770,7 +3770,7 @@ namespace RogueSurvivor.Engine
         public int ActorBarricadingMaterialNeedForFortification(Actor builder, bool isLarge)
         {
             int baseCost = isLarge ? 4 : 2;
-            int skillBonus = (builder.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) >= 3 ? SKILL_CARPENTRY_LEVEL3_BUILD_BONUS : 0);
+            int skillBonus = (builder.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) >= 3 ? SKILL_CARPENTRY_LEVEL3_BUILD_BONUS : 0);
             return Math.Max(1, baseCost - skillBonus);
         }
 
@@ -4116,14 +4116,14 @@ namespace RogueSurvivor.Engine
             if (!CanActorReviveCorpse(actor, corpse))
                 return 0;
             int baseChance = CorpseFreshnessPercent(corpse) / 4;
-            int skillBonus = actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) * SKILL_MEDIC_REVIVE_BONUS;
+            int skillBonus = actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) * SKILL_MEDIC_REVIVE_BONUS;
             return baseChance + skillBonus;
         }
 
         public int CorpseReviveHPs(Actor actor, Corpse corpse)
         {
             int baseHps = 5;
-            int skillBonus = actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC);
+            int skillBonus = actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC);
             return baseHps + skillBonus;
         }
 

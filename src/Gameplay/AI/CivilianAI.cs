@@ -155,6 +155,15 @@ namespace RogueSurvivor.Gameplay.AI
         {
             List<Percept> mapPercepts = FilterSameMap(game, percepts);
 
+            // get data.
+            List<Percept> enemies = FilterEnemies(game, mapPercepts);
+            bool hasEnemies = enemies != null && enemies.Count > 0;
+            bool visibleLeader = m_Actor.HasLeader && m_LOSSensor.FOV.Contains(m_Actor.Leader.Location.Position);
+            bool checkOurLeader = m_Actor.HasLeader && !DontFollowLeader;
+            bool seeLeader = checkOurLeader && visibleLeader;
+            bool isLeaderFighting = checkOurLeader && IsAdjacentToEnemy(game, m_Actor.Leader);
+            bool isCourageous = checkOurLeader && seeLeader && isLeaderFighting && !game.Rules.IsActorTired(m_Actor);
+
             // DEBUG BOT
 #if DEBUG
             bool botBreakpoint = false;
@@ -184,6 +193,14 @@ namespace RogueSurvivor.Gameplay.AI
                 return bestEquip;
             }
             // end alpha10
+
+            //0. Update Skill Sharing Tables
+            //party skill share
+            if (visibleLeader)
+            {
+                m_Actor.Sheet.LearnSharedSkills(m_Actor.Leader.Sheet.SkillTable);
+            }
+            else m_Actor.Sheet.ForgetSharedSkills();
 
             // 1. Follow order
             if (this.Order != null)
@@ -238,14 +255,7 @@ namespace RogueSurvivor.Gameplay.AI
             // 31 wander.
             //////////////////////////////////////////////////////////////////////
 
-            // get data.
-            List<Percept> enemies = FilterEnemies(game, mapPercepts);
-            bool hasEnemies = enemies != null && enemies.Count > 0;
-            bool checkOurLeader = m_Actor.HasLeader && !DontFollowLeader;
-            bool seeLeader = checkOurLeader && m_LOSSensor.FOV.Contains(m_Actor.Leader.Location.Position);
-            bool isLeaderFighting = checkOurLeader && IsAdjacentToEnemy(game, m_Actor.Leader);
-            bool isCourageous = checkOurLeader && seeLeader && isLeaderFighting && !game.Rules.IsActorTired(m_Actor);
-
+            
             // safety counter.
             if (hasEnemies)
                 m_SafeTurns = 0;
@@ -266,7 +276,7 @@ namespace RogueSurvivor.Gameplay.AI
             {
                 ClearTabooTrades();
             }
-
+            
             // last enemy saw.
             if (hasEnemies)
                 m_LastEnemySaw = enemies[game.Rules.Roll(0, enemies.Count)];

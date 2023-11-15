@@ -35,7 +35,7 @@ namespace RogueSurvivor.Data
         ActorController m_Controller;
         bool m_isBotPlayer;  // alpha10.1
         ActorSheet m_Sheet;
-        SkillTable m_SharedSkills;
+       
         int m_SpawnTime;
         Inventory m_Inventory = null;
         Doll m_Doll;
@@ -59,7 +59,7 @@ namespace RogueSurvivor.Data
         Attack m_CurrentRangedAttack;
         Defence m_CurrentDefence;
         Actor m_Leader;
-        bool m_isLeaderVisible = false;
+        
         List<Actor> m_Followers = null;
         int m_TrustInLeader;
         List<TrustRecord> m_TrustList = null;
@@ -71,7 +71,7 @@ namespace RogueSurvivor.Data
         Corpse m_DraggedCorpse;
         bool m_IsInvincible;
         int m_OdorSuppressorCounter;
-        bool m_activeSkillShare = false;
+       
 
         /// <summary>
         /// Gets or sets model. Setting model reset inventory and all stats to the model default values.
@@ -305,10 +305,6 @@ namespace RogueSurvivor.Data
         {
             get { return m_Sheet; }
         }
-        public SkillTable SharedSkills
-        {
-            get { return m_SharedSkills; }
-        }
 
         public int ActionPoints
         {
@@ -387,16 +383,8 @@ namespace RogueSurvivor.Data
             get { return m_TrustInLeader; }
             set { m_TrustInLeader = value; }
         }
-        public bool IsLeaderVisible
-        {
-            get { return m_isLeaderVisible; }
-            set { m_isLeaderVisible = value; }
-        }
-        public bool ActiveSkillShare
-        {
-            get { return m_activeSkillShare; }
-            set { m_activeSkillShare = value; }
-        }
+
+    
         public IEnumerable<Actor> Followers
         {
             get { return m_Followers; }
@@ -518,7 +506,7 @@ namespace RogueSurvivor.Data
 
             m_Doll = new Doll(model.DollBody);
             m_Sheet = new ActorSheet(model.StartingSheet);
-            m_SharedSkills = new SkillTable();
+            
 
             // starting points maxed.
             m_ActionPoints = m_Doll.Body.Speed;
@@ -761,11 +749,6 @@ namespace RogueSurvivor.Data
         public ItemRangedWeapon GetEquippedRangedWeapon()
         {
             return GetEquippedItem(DollPart.RIGHT_HAND) as ItemRangedWeapon;
-        }
-
-        public int GetSkillLevel(int id)
-        {
-            return SharedSkills.GetSkillLevel(id) > Sheet.SkillTable.GetSkillLevel(id) && IsLeaderVisible ? Sheet.SkillTable.GetSkillLevel(id) : SharedSkills.GetSkillLevel(id);
         }
 
         private bool GetFlag(Flags f) { return (m_Flags & f) != 0; }

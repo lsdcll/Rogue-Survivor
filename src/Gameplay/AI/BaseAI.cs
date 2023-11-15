@@ -133,7 +133,7 @@ namespace RogueSurvivor.Gameplay.AI
         protected abstract void CreateSensors();
         protected abstract List<Percept> UpdateSensors(RogueGame game);
         protected abstract ActorAction SelectAction(RogueGame game, List<Percept> percepts);
-
+        
         protected List<Percept> FilterSameMap(RogueGame game, List<Percept> percepts)
         {
             if (percepts == null || percepts.Count == 0)
@@ -1658,7 +1658,7 @@ namespace RogueSurvivor.Gameplay.AI
         protected ActorAction BehaviorBuildSmallFortification(RogueGame game)
         {
             // don't bother if no carpentry skill or not enough material.
-            if (m_Actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
+            if (m_Actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
                 return null;
             if (game.Rules.CountBarricadingMaterial(m_Actor) < game.Rules.ActorBarricadingMaterialNeedForFortification(m_Actor, false))
                 return null;
@@ -1712,7 +1712,7 @@ namespace RogueSurvivor.Gameplay.AI
         protected ActorAction BehaviorBuildLargeFortification(RogueGame game, int startLineChance)
         {
             // don't bother if no carpentry skill or not enough material.
-            if (m_Actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
+            if (m_Actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
                 return null;
             if (game.Rules.CountBarricadingMaterial(m_Actor) < game.Rules.ActorBarricadingMaterialNeedForFortification(m_Actor, true))
                 return null;
@@ -3331,7 +3331,7 @@ namespace RogueSurvivor.Gameplay.AI
                 return null;
 
             // make sure we have the basics : medic skill & medikit item.
-            if (m_Actor.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) == 0)
+            if (m_Actor.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC) == 0)
                 return null;
             if (!HasItemOfModel(game.GameItems.MEDIKIT))
                 return null;

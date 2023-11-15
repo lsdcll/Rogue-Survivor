@@ -146,10 +146,9 @@ namespace RogueSurvivor.Gameplay
             IDs.Z_TOUGH,
             IDs.Z_TRACKER
         };
-        public static List<IDs> PARTY_SHARE_SKILLS = new List<IDs>()
+        public static IDs[] PARTY_SHARE_SKILLS = new IDs[]
         {
             IDs.CARPENTRY,
-            IDs.LIGHT_FEET,
             IDs.MEDIC,
             IDs.NECROLOGY,
             IDs.STRONG_PSYCHE

@@ -5122,6 +5122,7 @@ namespace RogueSurvivor.Engine
         {
             // Upkeep.
             UpdatePlayerFOV(player);    // make sure LOS is up to date.
+            player.Sheet.CalculateCombinedSkillTable(); //make sure player skills are updated
             m_Player = player;      // remember player.
             ComputeViewRect(player.Location.Position);
 
@@ -7640,7 +7641,7 @@ namespace RogueSurvivor.Engine
             /////////////////////////////////////
             // Check skill & has enough material.
             /////////////////////////////////////
-            if (player.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
+            if (player.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.CARPENTRY) == 0)
             {
                 AddMessage(MakeErrorMessage("need carpentry skill."));
                 return false;
@@ -9875,7 +9876,7 @@ namespace RogueSurvivor.Engine
             // done.
             return actionDone;
         }
-
+        
         void HandleAiActor(Actor aiActor)
         {
            
@@ -9890,44 +9891,6 @@ namespace RogueSurvivor.Engine
                 if (insaneAction != null && insaneAction.IsLegal())
                     desiredAction = insaneAction;
             }
-
-            //Party Share Skill Buff??
-
-            if (aiActor.HasLeader)
-            {
-                HashSet<Point> actorFov = LOS.ComputeFOVFor(m_Rules, aiActor, m_Session.WorldTime, m_Session.World.Weather);
-                HashSet<Point> leaderFov = LOS.ComputeFOVFor(m_Rules, aiActor.Leader, m_Session.WorldTime, m_Session.World.Weather);
-                aiActor.IsLeaderVisible = actorFov.Contains(aiActor.Leader.Location.Position) && leaderFov.Contains(aiActor.Location.Position);
-                if (aiActor.IsLeaderVisible)
-                {
-                    //LEARN SKILLS FROM LEADER
-                    foreach (Skill leaderSkill in aiActor.Leader.Sheet.SkillTable.Skills)
-                    {
-                        //if skill is shareable AND the leader has a higher skill level
-                        if (Skills.PARTY_SHARE_SKILLS.Contains((Skills.IDs)leaderSkill.ID) && leaderSkill.Level > aiActor.Sheet.SkillTable.GetSkillLevel(leaderSkill.ID))
-                        {
-                            //Calculate avg level between follower and leader
-                            int avgLvl = (int)Math.Ceiling((double)(leaderSkill.Level + aiActor.Sheet.SkillTable.GetSkillLevel(leaderSkill.ID) / 2));
-                            //Add skill to actor 
-                            //If actor already has shared skill and the level needs updating
-                            if (aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) != 0 && aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) != avgLvl)
-                            {
-                                aiActor.SharedSkills.UpdateSkill(leaderSkill.ID, avgLvl);
-                                break;
-                            }
-                            //If actor doesnt have shared skill
-                            else if (aiActor.SharedSkills.GetSkillLevel(leaderSkill.ID) == 0)
-                            {
-                                aiActor.SharedSkills.AddSkill(new Skill(leaderSkill.ID, avgLvl));
-                            }
-                        }
-
-                    }
-
-                }
-            }
-            
-             
 
             // Do action.
             if (desiredAction != null)
@@ -11204,9 +11167,10 @@ namespace RogueSurvivor.Engine
             lines.Add(" ");
 
             // 7. Skills
-            if (actor.Sheet.SkillTable != null && actor.Sheet.SkillTable.CountSkills > 0)
+            SkillTable actorSkills = actor.Sheet.CombinedSkillTable;
+            if (actorSkills != null && actorSkills.CountSkills > 0)
             {
-                foreach (Skill sk in actor.Sheet.SkillTable.Skills)
+                foreach (Skill sk in actorSkills.Skills)
                     lines.Add(String.Format("{0}-{1}", sk.Level, Skills.Name(sk.ID)));
                 lines.Add(" ");
             }
@@ -11452,7 +11416,7 @@ namespace RogueSurvivor.Engine
             lines.Add(" ");
 
             // 2. Necrology infos.
-            int necrology = m_Player.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
+            int necrology = m_Player.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.NECROLOGY);
 
             string deadSince = "???";
             if (necrology > 0)
@@ -11504,7 +11468,7 @@ namespace RogueSurvivor.Engine
 
             // 3. Medic info.
             string reviveEst = "???";
-            int medic = m_Player.Sheet.SkillTable.GetSkillLevel((int)Skills.IDs.MEDIC);
+            int medic = m_Player.Sheet.CombinedSkillTable.GetSkillLevel((int)Skills.IDs.MEDIC);
             if (medic >= Rules.SKILL_MEDIC_LEVEL_FOR_REVIVE_EST)
             {
                 int reviveP = m_Rules.CorpseReviveChance(m_Player, c);
@@ -18955,7 +18919,7 @@ namespace RogueSurvivor.Engine
             m_UI.UI_DrawStringBold(Color.White, "Skills", gx, gy);
             gy += BOLD_LINE_SPACING;
 
-            IEnumerable<Skill> skills = actor.Sheet.SkillTable.Skills;
+            IEnumerable<Skill> skills = actor.Sheet.CombinedSkillTable.Skills;
             if (skills == null)
                 return;
 

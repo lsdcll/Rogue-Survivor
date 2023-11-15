@@ -139,7 +139,10 @@ namespace RogueSurvivor.Data
                 m_Table = new Dictionary<int, Skill>(3);
 
             if (m_Table.ContainsKey(sk.ID))
-                throw new ArgumentException("skill of same ID already in table");
+            {
+                UpdateSkill(sk.ID, sk.Level);
+                return;
+            }
             if (m_Table.ContainsValue(sk))
                 throw new ArgumentException("skill already in table");
 
@@ -147,11 +150,6 @@ namespace RogueSurvivor.Data
         }
         public void UpdateSkill(int id, int level)
         {
-            if (m_Table == null)
-                m_Table = new Dictionary<int, Skill>(3);
-
-
-
             m_Table[id].Level = level;
         }
 
@@ -183,34 +181,7 @@ namespace RogueSurvivor.Data
                     m_Table = null;
             }
         }
-        public void AddOrIncreaseSkill(int id, int amt)
-        {
-            if (m_Table == null)
-                m_Table = new Dictionary<int, Skill>(3);
+      
 
-            Skill sk = GetSkill(id);
-            if (sk == null)
-            {
-                sk = new Skill(id);
-                m_Table.Add(id, sk);
-            }
-
-            sk.Level += amt;
-        }
-
-        public void DecOrRemoveSkill(int id, int amt)
-        {
-            if (m_Table == null) return;
-
-            Skill sk = GetSkill(id);
-            if (sk == null) return;
-            if (sk.Level - amt <= 0)
-            {
-                m_Table.Remove(id);
-                if (m_Table.Count == 0)
-                    m_Table = null;
-            }
-            sk.Level -= amt;
-        }
     }
 }
