@@ -2,16 +2,15 @@
 
 ## About this fork
 
-This is modification to game Rogue Survival Alpha 10.1 (last version from 2018).
+This is my modification to game Rogue Survival Alpha 10.1.
 
 Original created by roguedjack: https://roguesurvivor.blogspot.com/
 
 Modification by Tomashu: https://github.com/Tomash667/Rogue-Survivor
 
-Diffrences with original game:
-+ converted rendering & music handling to Monogame
-+ upgraded .net framework version
-+ alt+enter to switch between fullscreen and windowed mode
+Features Added by Liam Carroll(lsdcll):
++Added Party Skill Sharing Feature: Leaders now share skills to their followers!
+
 
 ## The Game
 
